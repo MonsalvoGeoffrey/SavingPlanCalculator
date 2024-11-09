@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Include MathJax -->
+    <script id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.0.24/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <title>Savings Plan Calculator</title>
+    <style>
+        /* Initially hide elements containing LaTeX */
+        .math-output {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold mb-4">Savings Plan Calculator</h1>
+
+        <div class="mb-4">
+            <label for="pmt" class="block text-sm font-medium text-gray-700">Monthly Payment (PMT)</label>
+            <input type="number" id="pmt" class="mt-1 p-2 w-full border rounded" value="10">
+        </div>
+
+        <div class="mb-4">
+            <label for="apr" class="block text-sm font-medium text-gray-700">Annual Percentage Rate (APR in %)</label>
+            <input type="number" id="apr" class="mt-1 p-2 w-full border rounded" value="8">
+        </div>
+
+        <div class="mb-4">
+            <label for="n" class="block text-sm font-medium text-gray-700">Number of Compounding Periods per Year (n)</label>
+            <input type="number" id="n" class="mt-1 p-2 w-full border rounded" value="12">
+        </div>
+
+        <div class="mb-4">
+            <label for="y" class="block text-sm font-medium text-gray-700">Number of Years (Y)</label>
+            <input type="number" id="y" class="mt-1 p-2 w-full border rounded" value="1">
+        </div>
+
+        <!-- Display the result as LaTeX -->
+        <div class="mt-4">
+            <p class="text-lg math-output" id="latexResultContainer">Total Amount (A): <span id="latexResult"></span></p>
+        </div>
+
+        <!-- Display the formula with values as LaTeX -->
+        <div class="mt-6">
+            <h2 class="text-xl font-bold mb-2">Formula with Values</h2>
+            <p class="text-sm math-output" id="formulaWithValuesContainer"><span id="formulaWithValues"></span></p>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let PMT = 0;
+        let APR = 0;
+        let n = 1;
+        let Y = 1;
+
+        const pmtInput = document.getElementById('pmt');
+        const aprInput = document.getElementById('apr');
+        const nInput = document.getElementById('n');
+        const yInput = document.getElementById('y');
+        PMT = parseFloat(pmtInput.value) || 0;
+        APR = parseFloat(aprInput.value) || 0;
+        n = parseFloat(nInput.value) || 1;
+        Y = parseFloat(yInput.value) || 1;
+
+        const latexResultSpan = document.getElementById('latexResult');
+        const formulaWithValuesSpan = document.getElementById('formulaWithValues');
+
+        const latexResultContainer = document.getElementById('latexResultContainer');
+        const formulaWithValuesContainer = document.getElementById('formulaWithValuesContainer');
+
+        function updateCalculations() {
+            let rate = APR / 100;
+            let numOfPayments = n * Y;
+            let result;
+            if (rate === 0) {
+                result = PMT * numOfPayments;
+            } else {
+                result = PMT * ((((1 + rate / n) ** numOfPayments) - 1) / (rate / n));
+            }
+            let latexResult = result.toFixed(2);
+
+            let formulaWithValues = `A = ${PMT} \\times \\left( \\frac{(1 + \\frac{${rate}}{${n}})^{${n}\\times${Y}} - 1}{\\frac{${rate}}{${n}}} \\right)`;
+
+            latexResultSpan.textContent = `\\(A = ${latexResult}\\)`;
+            formulaWithValuesSpan.textContent = `\\[${formulaWithValues}\\]`;
+
+            // Re-process MathJax and show the elements after typesetting
+            MathJax.typesetPromise().then(() => {
+                latexResultContainer.style.visibility = 'visible';
+                formulaWithValuesContainer.style.visibility = 'visible';
+            });
+        }
+
+        // Add event listeners to inputs
+        pmtInput.addEventListener('input', function() {
+            PMT = parseFloat(pmtInput.value) || 0;
+            updateCalculations();
+        });
+
+        aprInput.addEventListener('input', function() {
+            APR = parseFloat(aprInput.value) || 0;
+            updateCalculations();
+        });
+
+        nInput.addEventListener('input', function() {
+            n = parseFloat(nInput.value) || 1;
+            updateCalculations();
+        });
+
+        yInput.addEventListener('input', function() {
+            Y = parseFloat(yInput.value) || 1;
+            updateCalculations();
+        });
+
+        // Initial calculation to set default values
+        updateCalculations();
+    });
+    </script>
+</body>
+</html>
