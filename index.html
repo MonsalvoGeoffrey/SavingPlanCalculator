@@ -83,7 +83,7 @@
             } else {
                 result = PMT * ((((1 + rate / n) ** numOfPayments) - 1) / (rate / n));
             }
-            let latexResult = result.toFixed(2);
+            let latexResult = result.toFixed(4);
 
             let formulaWithValues = `A = ${PMT} \\times \\left( \\frac{(1 + \\frac{${rate}}{${n}})^{${n}\\times${Y}} - 1}{\\frac{${rate}}{${n}}} \\right)`;
 
